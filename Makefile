@@ -7,7 +7,7 @@
 #
 ###############################################################
 
-TARGET = dance_server
+TARGET = DanceSynth 
 
 INCLUDE_DIRS = -I../../include -I../../../Framework/include
 
