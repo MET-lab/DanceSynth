@@ -40,6 +40,9 @@
 #include "LinuxCM730.h"
 #include "LinuxActionScript.h"
 
+#include "StatusCheck.h"
+#include "LinuxDARwIn.h"
+
 #ifdef MX28_1024
 #define MOTION_FILE_PATH    "../../../Data/motion_1024.bin"
 #else
@@ -103,11 +106,16 @@ int main(void)
             return 0;
     }
     MotionManager::GetInstance()->AddModule((MotionModule*)Action::GetInstance());
+    MotionManager::GetInstance()->AddModule((MotionModule*)Head::GetInstance());
+    MotionManager::GetInstance()->AddModule((MotionModule*)Walking::GetInstance());
+    
     LinuxMotionTimer *motion_timer = new LinuxMotionTimer(MotionManager::GetInstance());
     motion_timer->Start();
     /////////////////////////////////////////////////////////////////////
 
       
+    
+
     /////////////////// Dancing Server Script //////////////////////////
     
     //Initialize variables

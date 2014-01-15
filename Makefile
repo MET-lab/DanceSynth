@@ -25,6 +25,13 @@ clean:
 
 darwin.a:
 	make -C ../../build
+	
+test: SequenceAnalyzer.o
+	SequenceAnalyzer.o sequences.dat
+
+SequenceAnalyzer.o: SequenceAnalyzer.cpp SequenceAnalyzer.h
+	$(CXX) -o SequenceAnalyzer.o SequenceAnalyzer.cpp
+
 
 $(TARGET): darwin.a $(OBJECTS)
 	$(CXX) $(CFLAGS) $(LFLAGS) $(OBJECTS) ../../lib/darwin.a -o $(TARGET)
