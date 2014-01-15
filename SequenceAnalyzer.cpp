@@ -73,21 +73,23 @@ bool SequenceAnalyzer::load(string fileName) {
   IgnoreComments(_file);
   
   //We assume the first [non-commented] line is base positions
-  string baseLine = _file.getline();
+  string line;
+  getline(_file,line);
 
-  cout << "Base positions: " << baseLine <<endl;
+  cout << "Base positions: " << line <<endl;
 
-  IgnoreComments(file);
+  IgnoreComments(_file);
 
   cout<< "Dance Sequences: " << endl;
 
   while (!_file.eof())
   {
-    string line = _file.getLine();
+    //string line = _file.getLine();
+    getline(_file,line);
 
     cout<< line << endl;
 
-    IgnoreComments(file);
+    IgnoreComments(_file);
   }
 
 
@@ -102,9 +104,12 @@ bool SequenceAnalyzer::load(string fileName) {
 
 //Ignore commented lines
 void IgnoreComments(ifstream & file) {
+  string scrap;
   //Process file until next non-commented line
-  while (!file.eof() && file.peek() == "#") {
-    file.getline();
+  while (!file.eof() && file.peek() == '#') {
+    //file.getline();
+    //file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    getline(file,scrap);
   }
 }
 
@@ -117,7 +122,7 @@ int main(int argc, char* argv[]) {
     return -1;
   }
 
-  SequenceAnalyzer s = new SequenceAnalyzer(argv[1]);
+  SequenceAnalyzer* s = new SequenceAnalyzer(argv[1]);
 
   return 0;
 }
