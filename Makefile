@@ -26,11 +26,12 @@ clean:
 darwin.a:
 	make -C ../../build
 	
+<<<<<<< HEAD
 test: SequenceAnalyzer.o
 	SequenceAnalyzer.o sequences.json
 
-SequenceAnalyzer.o: SequenceAnalyzer.cpp SequenceAnalyzer.h
-	$(CXX) -o SequenceAnalyzer.o SequenceAnalyzer.cpp
+SequenceAnalyzer: SequenceAnalyzer.cpp SequenceAnalyzer.h
+	$(CXX) -o SequenceAnalyzer SequenceAnalyzer.cpp
 
 
 $(TARGET): darwin.a $(OBJECTS)
