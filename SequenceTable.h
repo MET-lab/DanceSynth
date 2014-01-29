@@ -1,27 +1,27 @@
 /*
- * sequenceAnalyzer.h
+ * SequenceTable.h
  * Written by: Mark Koh
  * DARwIn-OP Dance Synthesis Project
  * 06/04/2013
  *
- * Description: This class takes a file with either a JSON or proprietary sequence list and loads them 
- * into a SequenceTable.
+ * Description: This class contains an array and a map which creates a markov table linking sequences
+ * dance positions together.  The bases vector contains a number of different base positions which will be
+ * returned if a dance move sequence reaches NULL.
  *
  */
 
-#ifndef SEQUENCEANALYZER_H
-#define SEQUENCEANALYZER_H
+#ifndef SEQUENCETABLE_H
+#define SEQUENCETABLE_H
 
 
 //-----------------------------------------------------------------------------
 //------------------------ Dependencies ---------------------------------------
 //-----------------------------------------------------------------------------
 
-#include <iostream>
 #include <stdlib.h>
-#include <fstream>
-#include "SequenceTable.h"
-
+#include <vector>
+#include <map>
+#include <iostream>
 
 using namespace std;
 
@@ -35,38 +35,43 @@ using namespace std;
 //------------------------ Class Declaration ----------------------------------
 //-----------------------------------------------------------------------------
 
-class SequenceAnalyzer {
+class SequenceTable {
   public:
     //-------------------------------------------------  
     //-------------- Constructors ---------------------  
     //-------------------------------------------------  
-    SequenceAnalyzer();
-    SequenceAnalyzer(string fileName);
+    SequenceTable();
 
     //-------------------------------------------------  
     //-------------- Destructor ---------------------  
     //------------------------------------------------- 
-    ~SequenceAnalyzer();
+    ~SequenceTable();
 
     //-------------------------------------------------  
     //-------------- Inspectors - ---------------------  
     //------------------------------------------------- 
-    int getNextPosition() const;
-
+    vector<int> getSuffixes(int pos);
+	int numMoves() const;
+	int numBases() const;
 
     //-------------------------------------------------  
     //-------------- Mutators -------------------------  
     //------------------------------------------------- 
-    bool load(string fileName);
+    void addBase(int pos);
+	void addMove(int prefix, int postfix);
 
-
+	//-------------------------------------------------  
+    //-------------- Facilitators----------------------  
+    //------------------------------------------------- 
+	void print(ostream &out);
 
   private:
-    ifstream _file;
-    vector<int> _basePositions;
-    map<int, vector<int> > _positionMap;
+    vector<int> _bases;
+    map<int, vector<int> > _table;
 
 
 };
+
+void printVector(vector<int> list, ostream &out);
 
 #endif

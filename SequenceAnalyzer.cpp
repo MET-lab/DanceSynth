@@ -1,15 +1,11 @@
 /*
- * sequenceAnalyzer.cpp
+ * SequenceAnalyzer.cpp
  * Written by: Mark Koh
  * DARwIn-OP Dance Synthesis Project
  * 06/04/2013
  *
-  * Description: This class takes a file with line-separated lists
- * of comma-separated "dance positions" and loads them into a markov table.
- *
- * 
- * The first line of the file will list, comma separated list of base positions.
- * Any line starting with a "#" will be discarded as a comment.
+ * Description: This class takes a file with either a JSON or proprietary sequence list and loads them 
+ * into a SequenceTable.
  *
  */
 
@@ -109,15 +105,3 @@ void IgnoreComments(ifstream & file) {
 }
 
 
-//Test main
-int main(int argc, char* argv[]) {
-  cout<< "**Sequence Analyzer Test**"<<endl;
-
-  if (argc < 1) {
-    return -1;
-  }
-
-  SequenceAnalyzer s = new SequenceAnalyzer(argv[1]);
-
-  return 0;
-}

@@ -27,7 +27,7 @@ darwin.a:
 	make -C ../../build
 	
 test: SequenceAnalyzer.o
-	SequenceAnalyzer.o sequences.dat
+	SequenceAnalyzer.o sequences.json
 
 SequenceAnalyzer.o: SequenceAnalyzer.cpp SequenceAnalyzer.h
 	$(CXX) -o SequenceAnalyzer.o SequenceAnalyzer.cpp
