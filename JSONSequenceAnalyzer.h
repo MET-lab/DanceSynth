@@ -1,5 +1,5 @@
 /*
- * sequenceAnalyzer.h
+ * JSONSequenceAnalyzer.h
  * Written by: Mark Koh
  * DARwIn-OP Dance Synthesis Project
  * 06/04/2013
@@ -14,8 +14,8 @@
  *
  */
 
-#ifndef SEQUENCEANALYZER_H
-#define SEQUENCEANALYZER_H
+#ifndef JSONSequenceAnalyzer_H
+#define JSONSequenceAnalyzer_H
 
 
 //-----------------------------------------------------------------------------
@@ -25,7 +25,8 @@
 #include <iostream>
 #include <stdlib.h>
 #include <fstream>
-#include "SequenceTable.h"
+#include <jansson.h>
+#include "SequenceAnalyzer.h"
 
 using namespace std;
 
@@ -39,37 +40,30 @@ using namespace std;
 //------------------------ Class Declaration ----------------------------------
 //-----------------------------------------------------------------------------
 
-class SequenceAnalyzer {
+class JSONSequenceAnalyzer : public SequenceAnalyzer {
   public:
     //-------------------------------------------------  
     //-------------- Constructors ---------------------  
     //-------------------------------------------------  
-    SequenceAnalyzer();
+    JSONSequenceAnalyzer();
+    JSONSequenceAnalyzer(string filename);
 
     //-------------------------------------------------  
     //-------------- Destructor ---------------------  
     //------------------------------------------------- 
-    ~SequenceAnalyzer();
+    ~JSONSequenceAnalyzer();
 
     //-------------------------------------------------  
     //-------------- Inspectors - ---------------------  
     //------------------------------------------------- 
-    SequenceTable getSequenceTable() const;
 
 
     //-------------------------------------------------  
     //-------------- Mutators -------------------------  
     //------------------------------------------------- 
     void addSequence(string sequence);
-	virtual bool parse(string filename) = 0; //Abstract
+	bool parse(string filename);
 
-
-
-  protected:
-    ifstream _file;
-    SequenceTable _table;
 };
-
-void IgnoreComments(ifstream & file);
 
 #endif
