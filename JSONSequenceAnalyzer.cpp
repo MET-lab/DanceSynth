@@ -64,61 +64,77 @@ bool JSONSequenceAnalyzer::parse(string filename) {
   }
   _file.close();
 
-  json_t *json;
+  //Decalare our json types
+  json_t *root, *bases, *sequences;
   json_error_t error;
 
-  json = json_load_file(filename.c_str(),0,&error);
 
-  if (!json) {
+  //Read the root from the file
+  root = json_load_file(filename.c_str(),0,&error);
+
+  //Do some error checking
+  if (!root) {
 	  cout<<"Error loading JSON file: "<<error.text<<endl;
 	  cout<<"Line: "<<error.line<<", Column: "<<error.column<<endl;
 	  return false;
   }
-
-  if (!json_is_array(json)){
+  if (!json_is_object(root)){
 	cout<<"Error in JSON formatting."<<endl;
 	return false;
   }
 
-  json_t *bases = json_object_get(json, "bases");
+  //Grab our bases and sequences
+  bases = json_object_get(root, "bases");
+  sequences = json_object_get(root, "sequences");
 
-  if(!json_is_array(bases)){
+
+  //Some more error checking (just make sure everything is as expected)
+  if(!json_is_array(bases) || !json_is_array(sequences)){
 	  cout<<"Base positions unable to be read as an array."<<endl;
 	  return false;
   }
 
-  cout<<"Success!"<<endl;
-
-  //IgnoreComments(_file);
+  //Handle the base positions
+  int numBases = json_array_size(bases);
   
-  //We assume the first [non-commented] line is base positions
-  /*string line;
-  getline(_file,line);
-
-
-  cout << "Base positions: " << line <<endl;
-
-  IgnoreComments(_file);
-
-  cout<< "Dance Sequences: " << endl;
-
-  while (!_file.eof())
-  {
-    //string line = _file.getLine();
-    getline(_file,line);
-
-    cout<< line << endl;
-
-    IgnoreComments(_file);
+  cout<<"Base positions read: "<<endl;
+  for (int i=0; i<numBases;i++){
+    json_t *pos = json_array_get(bases,i);
+    if (json_is_integer(pos)){
+      int unpacked;
+      json_unpack(pos,"i",&unpacked);
+      cout<<unpacked<<",";
+    }
   }
+  cout<<endl;
+
+  //Handle the base positions
+  int numSequences = json_array_size(sequences);
+  
+  for (int i=0; i<numSequences;i++){
+    json_t *bundle = json_array_get(sequences,i);
+    if (json_is_object(bundle)){
+      const char *name;
+      json_t *json_name = json_object_get(bundle,"name");
+      json_t *sequence = json_object_get(bundle,"sequence");
+      
+      if (json_is_string(json_name) && json_is_array(sequence)){
+        json_unpack(json_name,"s",&name);
+        int length = json_array_size(sequence);  
+        cout<<"Sequence read: "<<name<<", Sequence length of "<<length<<endl;
+
+      }
 
 
-  cout << "Done reading file."<<endl;
-  */
-
+    }
+  }
+  cout<<endl;
+  
   //The file was successfully loaded!  Return true.
   return true;
 
 }
 
+void analyzeSequence(json_t* seqence) {
 
+}

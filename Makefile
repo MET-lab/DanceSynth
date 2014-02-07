@@ -18,7 +18,7 @@ LFLAGS += -lpthread -ljpeg -lrt
 
 OBJECTS =   main.o
 
-TEST_COMPONENTS = test.cpp SequenceAnalyzer.cpp SequenceTable.cpp
+TEST_COMPONENTS = test.cpp SequenceAnalyzer.cpp SequenceTable.cpp JSONSequenceAnalyzer.cpp
 
 all: $(TARGET)
 
@@ -28,11 +28,11 @@ clean:
 darwin.a:
 	make -C ../../build
 	
-test: test.o
+test: buildtest
 	./test.o sequences.json
 
-test.o: $(COMPONENTS)
-	$(CXX) -o test.o $(TEST_COMPONENTS) 
+buildtest: $(COMPONENTS)
+	$(CXX) -o test.o $(TEST_COMPONENTS) -ljansson
 
 
 $(TARGET): darwin.a $(OBJECTS)

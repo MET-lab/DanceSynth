@@ -16,7 +16,7 @@ return 0;
 }*/
 
 void TestSequenceTable();
-void TestSequenceAnalyzer();
+void TestSequenceAnalyzer(string filename);
 
 
 //Test main
@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
 	}
 	*/
 	
-	TestSequenceTable();
+	TestSequenceAnalyzer(argv[1]);
 
 	return 0;
 }
@@ -59,4 +59,6 @@ void TestSequenceAnalyzer(string filename) {
 	cout<< "**Sequence Analyzer Test**"<<endl;
 
 	JSONSequenceAnalyzer s(filename);
+
+  
 }
