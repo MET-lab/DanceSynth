@@ -135,6 +135,15 @@ bool JSONSequenceAnalyzer::parse(string filename) {
 
 }
 
-void analyzeSequence(json_t* seqence) {
+
+//Given a sequence (with potentialy nested arrays), this function will add moves to the
+//sequence table 
+void analyzeSequence(int prefix ,json_t* seqence) {
+  
+}
+
+//Will be called by analyzeSequence when an array is found.  Nested arrays in the list
+//will have analyzeSequence called upon them
+void analyzeOr(int prefix, json_t* list){
 
 }
