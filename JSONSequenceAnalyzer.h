@@ -65,8 +65,9 @@ class JSONSequenceAnalyzer : public SequenceAnalyzer {
 	bool parse(string filename);
 
   protected:
-    void analyzeSequence(int prefix, json_t* seqence);
-    void analyzeOr(int prefix, json_t* list);
+    void analyzeSequence(json_t* prefix, json_t* seqence);
+    void analyzeOr(json_t* prefix, json_t* list);
+    void linkPair(json_t* prefix, json_t* postfix);
 };
 
 #endif
