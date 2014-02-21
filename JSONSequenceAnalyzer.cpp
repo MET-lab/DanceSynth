@@ -158,8 +158,8 @@ void analyzeSequence(json_t* prefix ,json_t* seqence) {
     //Call linkpair on the rest of the array
     int size = json_array_size(sequence);
     for (int i=0; i<size-1; i++) {
-      json_t *pre  = json_array_get(i);
-      json_t *post = json_aaray_get(i+1); 
+      json_t *pre  = json_array_get(sequence, i);
+      json_t *post = json_aaray_get(sequence, i+1); 
 
       linkPair(pre,post);
     }
@@ -173,20 +173,30 @@ void analyzeSequence(json_t* prefix ,json_t* seqence) {
 
 //Will be called by analyzeSequence when an array is found.  Nested arrays in the list
 //will have analyzeSequence called upon them
-void analyzeOr(json_t* prefix, json_t* list){
+void analyzeOr(json_t* prefix, json_t* postfix){
 
-  if (json_is_array(prefix)){
-    //TODO: Implement this!!
+  if ( !json_is_array(prefix) && json_is_array(postfix)){
+    
   }
+  else if ( json_is_array(prefix) && !json_is_array(postfix)){
+    
+  }
+  else if ( json_is_array(prefix) && json_is_array(postfix)) {
+  
+  }
+  
+  
   int size = json_array_size(prefix);
   for(int i=0; i<size; i++){
-    linkPair(json_array_get)
+    linkPair(json_array_get);
   }
 }
 
 //This will check to see if the prefix and postfixes are various types
-void linkPair(json_t* prefix, json_t* postfix){
-  if (json_is_array(prefix) || json_is_array(postfix)){
+void linkPair(json_t* prefix, json_t* postfix, bool potentialSequence){
+
+  //If we are being called from analyzeSequence and come across an array, it's an OR
+  if (!potentialSequence && ( json_is_array(prefix) || json_is_array(postfix) )){
     //Indirect recursion call to linkPair
     analyzeOr(prefix,postfix);
   }
@@ -196,5 +206,15 @@ void linkPair(json_t* prefix, json_t* postfix){
     json_unpack(prefix,"i",&pre);
     json_unpack(postfix,"i",&post);
     _table.addMove(pre,post);
+  }
+  else  {
+    if (json_is_array(prefix)){
+      int size = json_array_size(prefix);
+      for(int i=0; i<size; i++){
+        linkPair(json_array_get(prefix, i),postfix);
+      }    
+    }
+
+
   }
 }
