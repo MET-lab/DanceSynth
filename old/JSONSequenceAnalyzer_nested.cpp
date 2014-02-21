@@ -96,14 +96,13 @@ bool JSONSequenceAnalyzer::parse(string filename) {
   //Handle the base positions
   int numBases = json_array_size(bases);
 
-  //cout<<"Base positions read: "<<endl;
+  cout<<"Base positions read: "<<endl;
   for (int i=0; i<numBases;i++){
     json_t *pos = json_array_get(bases,i);
     if (json_is_integer(pos)){
       int unpacked;
       json_unpack(pos,"i",&unpacked);
-      //cout<<unpacked<<",";
-      _table.addBase(unpacked);
+      cout<<unpacked<<",";
     }
   }
   cout<<endl;
@@ -121,12 +120,12 @@ bool JSONSequenceAnalyzer::parse(string filename) {
       if (json_is_string(json_name) && json_is_array(sequence)){
         json_unpack(json_name,"s",&name);
 
-        int length = json_array_size(sequence); 
+        //int length = json_array_size(sequence); 
 
         //Analyze sequence with NULL for prefix
-        analyzeSequence(sequence);
+        analyzeSequence(NULL,sequence);
 
-        //cout<<"Sequence read: "<<name<<", Sequence length of "<<length<<endl;
+        cout<<"Sequence read: "<<name<<", Sequence length of "<<length<<endl;
 
       }
 
@@ -143,28 +142,65 @@ bool JSONSequenceAnalyzer::parse(string filename) {
 
 //Given a sequence (with potentialy nested arrays), this function will add moves to the
 //sequence table 
-void JSONSequenceAnalyzer::analyzeSequence(json_t* sequence) {
+void analyzeSequence(json_t* prefix ,json_t* seqence) {
   //from i=0 to length-1
   //Add the current element and the next element
 
   if (json_is_array(sequence)){
 
+    //If we have a NULL prefix, then we are at the start of a primary sequenece and can skip this.
+    //Otherwise, let's add it from the prefix
+    if (prefix != NULL) {
+      //Call linkPair on the prefix and each item in the sequence
+      linkPair(prefix, json_array_get(0));  
+    }
+
     //Call linkpair on the rest of the array
     int size = json_array_size(sequence);
     for (int i=0; i<size-1; i++) {
       json_t *pre  = json_array_get(sequence, i);
-      json_t *post = json_array_get(sequence, i+1); 
+      json_t *post = json_aaray_get(sequence, i+1); 
 
       linkPair(pre,post);
     }
+
+
+  }
+
+
+
+}
+
+//Will be called by analyzeSequence when an array is found.  Nested arrays in the list
+//will have analyzeSequence called upon them
+void analyzeOr(json_t* prefix, json_t* postfix){
+
+  if ( !json_is_array(prefix) && json_is_array(postfix)){
+    
+  }
+  else if ( json_is_array(prefix) && !json_is_array(postfix)){
+    
+  }
+  else if ( json_is_array(prefix) && json_is_array(postfix)) {
+  
+  }
+  
+  
+  int size = json_array_size(prefix);
+  for(int i=0; i<size; i++){
+    linkPair(json_array_get);
   }
 }
 
-
 //This will check to see if the prefix and postfixes are various types
-void JSONSequenceAnalyzer::linkPair(json_t* prefix, json_t* postfix){
+void linkPair(json_t* prefix, json_t* postfix, bool potentialSequence){
 
-  if (json_is_integer(prefix) && json_is_integer(postfix)) {
+  //If we are being called from analyzeSequence and come across an array, it's an OR
+  if (!potentialSequence && ( json_is_array(prefix) || json_is_array(postfix) )){
+    //Indirect recursion call to linkPair
+    analyzeOr(prefix,postfix);
+  }
+  else if (json_is_integer(prefix) && json_is_integer(postfix)) {
     //Link the prefix and postfix
     int pre, post;
     json_unpack(prefix,"i",&pre);
@@ -172,10 +208,13 @@ void JSONSequenceAnalyzer::linkPair(json_t* prefix, json_t* postfix){
     _table.addMove(pre,post);
   }
   else  {
-    cout<<"Error: Non-integer value found in sequence."<<endl;
-  }
-}
+    if (json_is_array(prefix)){
+      int size = json_array_size(prefix);
+      for(int i=0; i<size; i++){
+        linkPair(json_array_get(prefix, i),postfix);
+      }    
+    }
 
-void JSONSequenceAnalyzer::printTable(ostream &out){
-  _table.print(cout);
+
+  }
 }

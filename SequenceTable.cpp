@@ -23,6 +23,7 @@ SequenceTable::SequenceTable() {
   //Initialize anything that we need to initialize here
 
    //The user will need to load a file now using the load function
+   //_bases = 
 }
 
 //-------------------------------------------------  
@@ -83,6 +84,7 @@ void SequenceTable::print(ostream &out) {
 
 void printVector(vector<int> list, ostream &out) {
 	int size = list.size();
+  //cout<<"Base size = "<<size<<endl;
 	for (int i=0; i < size-1; i++){
 		out<<list[i]<<",";
 	}

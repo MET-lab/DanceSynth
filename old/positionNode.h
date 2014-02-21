@@ -1,34 +1,21 @@
 /*
- * JSONSequenceAnalyzer.h
+ * positionNode.h
  * Written by: Mark Koh
  * DARwIn-OP Dance Synthesis Project
- * 06/04/2013
+ * 07/02/2013
  *
- * Description: This class takes a file with line-separated lists
- * of comma-separated "dance positions" and loads them into a markov table.
- *
- * 
- * The first line of the file will list, comma separated list of base positions.  
- * Any line starting with a "#" will be discarded as a comment.
+ * Description: This class is essentially an aggrgation of a few attributes
+ * that can hold dance positons.  Its intention is for what is supposed to be
+ * pointed to by the sequenceAnalyzer array.
  *
  *
  */
 
-#ifndef JSONSequenceAnalyzer_H
-#define JSONSequenceAnalyzer_H
+#ifndef POSITIONNODE_H
+#define POSITIONNODE_H
 
 
-//-----------------------------------------------------------------------------
-//------------------------ Dependencies ---------------------------------------
-//-----------------------------------------------------------------------------
-
-#include <iostream>
-#include <stdlib.h>
-#include <fstream>
-#include <jansson.h>
-#include "SequenceAnalyzer.h"
-
-using namespace std;
+#include <vector>
 
 //-----------------------------------------------------------------------------
 //------------------------ Global Variables -----------------------------------
@@ -40,34 +27,49 @@ using namespace std;
 //------------------------ Class Declaration ----------------------------------
 //-----------------------------------------------------------------------------
 
-class JSONSequenceAnalyzer : public SequenceAnalyzer {
+class positionNode {
   public:
     //-------------------------------------------------  
     //-------------- Constructors ---------------------  
     //-------------------------------------------------  
-    JSONSequenceAnalyzer();
-    JSONSequenceAnalyzer(string filename);
+    positionNode();
 
     //-------------------------------------------------  
     //-------------- Destructor ---------------------  
     //------------------------------------------------- 
-    ~JSONSequenceAnalyzer();
+    ~postionNode();
 
     //-------------------------------------------------  
     //-------------- Inspectors - ---------------------  
     //------------------------------------------------- 
-
+    int getSize();
+    int genRandomInRange();
+    int getNextPosition();
 
     //-------------------------------------------------  
     //-------------- Mutators -------------------------  
     //------------------------------------------------- 
-    void addSequence(string sequence);
-	  bool parse(string filename);
-    void printTable(ostream &out);
 
-  protected:
-    void analyzeSequence(json_t* seqence);
-    void linkPair(json_t* prefix, json_t* postfix);
+    //-------------------------------------------------  
+    //-------------- Public Vars ----------------------  
+    //------------------------------------------------- 
+    int positionNumber;
+    int size;
+    vector<int> nextPositions;
+
+  private:
+
 };
+
+//-----------------------------------------------------------------------------
+//------------------------ Class Implementation -------------------------------
+//-----------------------------------------------------------------------------
+
+  positionNode::positionNode() {
+    nextPosition = new vector<int>();
+    size = 0;
+    //TODO: Check if random is instantiated yet, if not, instantiate it.
+  }
+
 
 #endif

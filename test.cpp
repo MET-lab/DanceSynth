@@ -60,5 +60,7 @@ void TestSequenceAnalyzer(string filename) {
 
 	JSONSequenceAnalyzer s(filename);
 
+  s.printTable(cout);
+
   
 }

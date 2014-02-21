@@ -62,11 +62,11 @@ class JSONSequenceAnalyzer : public SequenceAnalyzer {
     //-------------- Mutators -------------------------  
     //------------------------------------------------- 
     void addSequence(string sequence);
-	  bool parse(string filename);
-    void printTable(ostream &out);
+	bool parse(string filename);
 
   protected:
-    void analyzeSequence(json_t* seqence);
+    void analyzeSequence(json_t* prefix, json_t* seqence);
+    void analyzeOr(json_t* prefix, json_t* list);
     void linkPair(json_t* prefix, json_t* postfix);
 };
 
