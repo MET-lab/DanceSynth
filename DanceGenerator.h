@@ -1,29 +1,26 @@
 /*
- * SequenceTable.h
+ * DanceGenerator.h
  * Written by: Mark Koh
  * DARwIn-OP Dance Synthesis Project
  * 06/04/2013
  *
- * Description: This class contains an array and a map which creates a markov table linking sequences
- * dance positions together.  The bases vector contains a number of different base positions which will be
- * returned if a dance move sequence reaches NULL.
- *
+ * Description: This object takes a ssequenceTable and uses it to generate dances
+ * based as a state-based machine.
+ * 
  */
 
-#ifndef SEQUENCETABLE_H
-#define SEQUENCETABLE_H
+#ifndef DANCEGENERATOR_H
+#define DANCEGENERATOR_H
 
 
 //-----------------------------------------------------------------------------
 //------------------------ Dependencies ---------------------------------------
 //-----------------------------------------------------------------------------
 
-#include <stdlib.h>
-#include <vector>
-#include <map>
 #include <iostream>
 #include <stdlib.h>
-#include <time.h>
+#include <fstream>
+#include "SequenceTable.h"
 
 using namespace std;
 
@@ -31,54 +28,43 @@ using namespace std;
 //------------------------ Global Variables -----------------------------------
 //-----------------------------------------------------------------------------
 
-//None yet
-
+  //None yet
+  
 //-----------------------------------------------------------------------------
 //------------------------ Class Declaration ----------------------------------
 //-----------------------------------------------------------------------------
 
-class SequenceTable {
+class DanceGenerator {
   public:
     //-------------------------------------------------  
     //-------------- Constructors ---------------------  
     //-------------------------------------------------  
-    SequenceTable();
+    DanceGenerator(SequenceTable table);
 
     //-------------------------------------------------  
     //-------------- Destructor ---------------------  
     //------------------------------------------------- 
-    ~SequenceTable();
+    ~DanceGenerator();
 
     //-------------------------------------------------  
     //-------------- Inspectors - ---------------------  
     //------------------------------------------------- 
-    vector<int> getSuffixes(int pos);
-    int numMoves() const;
-    int numBases() const;
-    int getRandomBase() const;
-    int getRandomMove() const;
-    int getRandomNext(int currentPos) const;
-    bool isBase(int pos) const;
-    bool isMove(int pos) const;
+    void init();
+    int currentPos() const;
+
+
 
     //-------------------------------------------------  
     //-------------- Mutators -------------------------  
     //------------------------------------------------- 
-    void addBase(int pos);
-    void addMove(int prefix, int postfix);
+    int next() const;
+    void setPos(int pos);
 
-    //-------------------------------------------------  
-    //-------------- Facilitators----------------------  
-    //------------------------------------------------- 
-    void print(ostream &out);
 
-  private:
-    vector<int> _bases;
-    vector<int> _moves;
-    map<int, vector<int> > _table;
-
+  protected:
+    bool _atBase;
+    int _currentMove;
+    SequenceTable _table;
 };
-
-void printVector(vector<int> list, ostream &out);
 
 #endif

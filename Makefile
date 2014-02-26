@@ -18,7 +18,7 @@ LFLAGS += -lpthread -ljpeg -lrt
 
 OBJECTS =   main.o
 
-TEST_COMPONENTS = test.cpp SequenceAnalyzer.cpp SequenceTable.cpp JSONSequenceAnalyzer.cpp
+TEST_COMPONENTS = test.cpp SequenceAnalyzer.cpp SequenceTable.cpp JSONSequenceAnalyzer.cpp DanceGenerator.cpp
 
 all: $(TARGET)
 
