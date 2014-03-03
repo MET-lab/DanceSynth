@@ -2,6 +2,7 @@
 #include "SequenceTable.h"
 #include "SequenceAnalyzer.h"
 #include "JSONSequenceAnalyzer.h"
+#include "DanceGenerator.h"
 
 using namespace std;
 
@@ -29,10 +30,27 @@ int main(int argc, char* argv[]) {
 	}
 	*/
 	
-	TestSequenceAnalyzer(argv[1]);
+  JSONSequenceAnalyzer sa(argv[1]);
 
+
+  sa.printTable(cout);
+
+  DanceGenerator dg(sa.getSequenceTable());
+
+  char c;
+  cout<<"Keep pressing enter to spit out a move.  Enter '.' to quit."<<endl;
+  do {
+    cout<<"Move:"<<dg.currentPos();
+    if (dg.atBase())
+      cout<<endl<<"***Reset to base***";
+    dg.next();
+    c=getchar();
+  } while(c != '.');
+
+  
 	return 0;
 }
+
 
 void TestSequenceTable() {
 	cout<< "**Sequence Table Test**"<<endl;

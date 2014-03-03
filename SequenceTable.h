@@ -24,6 +24,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
+#include <algorithm>
 
 using namespace std;
 
@@ -55,9 +56,9 @@ class SequenceTable {
     vector<int> getSuffixes(int pos);
     int numMoves() const;
     int numBases() const;
-    int getRandomBase() const;
-    int getRandomMove() const;
-    int getRandomNext(int currentPos) const;
+    int getRandomBase();
+    int getRandomMove();
+    int getRandomNext(int currentPos);
     bool isBase(int pos) const;
     bool isMove(int pos) const;
 

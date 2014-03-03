@@ -45,20 +45,20 @@ int SequenceTable::numMoves() const {
   return _moves.size();
 }
 
-int SequenceTable::getRandomBase() const {
+int SequenceTable::getRandomBase() {
   int r = rand() % numBases();
   return _bases[r];
 }
 
-int SequenceTable::getRandomMove() const {
+int SequenceTable::getRandomMove() {
   int r = rand() % numMoves();
-  return _bases[r];
+  return _moves[r];
 }
 
 
-int SequenceTable::getRandomNext(int currentPos) const {
+int SequenceTable::getRandomNext(int currentPos) {
 
-  if(find(_moves.begin(),_moves.end(),prefix) != _moves.end()){
+  if(std::find(_moves.begin(),_moves.end(),currentPos) != _moves.end()){
     vector<int> possibles = _table[currentPos];
     int r = rand() % possibles.size();
     return possibles[r];
@@ -70,7 +70,7 @@ int SequenceTable::getRandomNext(int currentPos) const {
 
 bool SequenceTable::isBase(int pos) const {
   bool result = false;
-  if(find(_bases.begin(),_bases.end(),prefix) != _bases.end()){
+  if(std::find(_bases.begin(),_bases.end(),pos) != _bases.end()){
     result = true;
   }
   return result;
@@ -78,7 +78,7 @@ bool SequenceTable::isBase(int pos) const {
 
 bool SequenceTable::isMove(int pos) const {
   bool result = false;
-  if(find(_moves.begin(),_moves.end(),prefix) != _moves.end()){
+  if(std::find(_moves.begin(),_moves.end(),pos) != _moves.end()){
     result = true;
   }
   return result;
@@ -102,7 +102,7 @@ void SequenceTable::addMove(int prefix, int suffix){
   }*/
 
   //If the moves list doesn't already include this prefix, add it
-  if(find(_moves.begin(),_moves.end(),prefix) != _moves.end()){
+  if(find(_moves.begin(),_moves.end(),prefix) == _moves.end()){
     _moves.push_back(prefix);
   }
   //Add the move to the transition table

@@ -37,31 +37,31 @@ DanceGenerator::~DanceGenerator() {
 //------------------------------------------------- 
 void DanceGenerator::init(){
   int pos = _table.getRandomBase();
-  _currentMove = pos;
+  _currentPos = pos;
   _atBase = true;
 }
 
-int DanceGenerator::currentPos() const{
+int DanceGenerator::currentPos(){
   return _currentPos;
 }
 
 //-------------------------------------------------  
 //-------------- Mutators -------------------------  
 //------------------------------------------------- 
-int DanceGenerator::next() const {
+int DanceGenerator::next() {
   int pos;
   if(_atBase){
     //We're at a base, switch to a move
-    pos = _table.getRandomMove();
+    pos = (int)_table.getRandomMove();
     _atBase = false;
   }
   else {
     //We're at a move, get a random sequential move
-    pos = _table.getRandomNext(_currentMove);
+    pos = _table.getRandomNext(_currentPos);
     if (pos == -1){
       //We're at the end of the line, switch back to a base position
       pos = _table.getRandomBase();
-      atBase = true;
+      _atBase = true;
     }
   }
 
@@ -73,12 +73,16 @@ int DanceGenerator::next() const {
 
 void DanceGenerator::setPos(int pos){
   if (_table.isMove(pos)){
-    _currentMove = pos;
+    _currentPos = pos;
     _atBase = false;
   }
   else if (_table.isBase(pos)){
-    _currentMove = pos;
+    _currentPos = pos;
     _atBase = true;
   }
-  
+
+}
+
+bool DanceGenerator::atBase() const{
+  return _atBase;
 }
