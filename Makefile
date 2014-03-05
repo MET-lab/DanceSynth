@@ -14,9 +14,9 @@ INCLUDE_DIRS = -I../../include -I../../../Framework/include
 CXX = g++
 CXXFLAGS += -O2 -g -DLINUX -Wall $(INCLUDE_DIRS)
 #CXXFLAGS += -O2 -DLINUX -DDEBUG -Wall $(INCLUDE_DIRS)
-LFLAGS += -lpthread -ljpeg -lrt
+LFLAGS += -lpthread -ljpeg -lrt -ljansson
 
-OBJECTS =   main.o
+OBJECTS =   main.o JSONSequenceAnalyzer.o SequenceTable.o SequenceAnalyzer.o DanceGenerator.o
 
 TEST_COMPONENTS = test.cpp SequenceAnalyzer.cpp SequenceTable.cpp JSONSequenceAnalyzer.cpp DanceGenerator.cpp
 
@@ -33,7 +33,6 @@ test: buildtest
 
 buildtest: $(COMPONENTS)
 	$(CXX) -o test.o $(TEST_COMPONENTS) -ljansson
-
 
 $(TARGET): darwin.a $(OBJECTS)
 	$(CXX) $(CFLAGS) $(LFLAGS) $(OBJECTS) ../../lib/darwin.a -o $(TARGET)

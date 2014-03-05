@@ -56,9 +56,13 @@
 #define MOTION_FILE_PATH    "../../../Data/motion_4096.bin"
 #endif
 
+#define INI_FILE_PATH       "../../../Data/config.ini"
+
 #define PORT 9930
 #define BUFLEN 70
 #define SAMPLE_RATE (44100)
+
+#define INIT_POS 1
 
 
 void change_current_dir()
@@ -121,14 +125,23 @@ int main(int argc, char* argv[])
   /////////////////////////////////////////////////////////////////////
 
 
-
+  /////////////////// Initialize Motion ///////////////////////////////
+  
+  minIni* ini = new minIni(INI_FILE_PATH);
+  
+  MotionManager::GetInstance()->LoadINISettings(ini);
+  Action::GetInstance()->m_Joint.SetEnableBody(true, true);
+  MotionManager::GetInstance()->SetEnable(true);
+  
+  Action::GetInstance()->Start(INIT_POS);
+  while(Action::GetInstance()->IsRunning()) usleep(8*1000);
 
   /////////////////// Dancing Server Script //////////////////////////
 
   //Initialize variables    
   JSONSequenceAnalyzer * sa;
-  bool eyesOnly = false;
   string filename;
+  int current;
 
   if(argc > 1){
     filename = argv[1];
@@ -139,14 +152,11 @@ int main(int argc, char* argv[])
   }
 
   sa = new JSONSequenceAnalyzer(filename);
-  
+
   DanceGenerator dg(sa->getSequenceTable());
 
   //Initialize the motion manager and stand up
-  MotionManager::GetInstance()->SetEnable(true);
-
-  Action::GetInstance()->Start(1);    /* Init(stand up) pose */
-  while(Action::GetInstance()->IsRunning()) usleep(8*1000);
+  //MotionManager::GetInstance()->SetEnable(true);
 
   //printf("Press the ENTER key to begin!\n");
   /*
@@ -168,6 +178,9 @@ int main(int argc, char* argv[])
   }
   */
 
+  //Go to the initial position
+  //Action::GetInstance()->Start(initPos);
+  //while(Action::GetInstance()->IsRunning()) usleep(8*1000);
 
   //Connect to the server
   if ((serverSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
@@ -198,13 +211,12 @@ int main(int argc, char* argv[])
       else {
         //Do all activities when a beat is detected
         printf("Recieved packet from BeatTracker.\n");
-          current = dg.currentPos();
-          printf("Playing action %d...\n",current);
-          Action::GetInstance()->Start( current );    // Call pose
-          //while(Action::GetInstance()->IsRunning()) usleep(8*1000);
-          //Change to base position between poses
-          dg.next(); //Advance the dance generator
-        }
+        current = dg.currentPos();
+        printf("Playing action %d...\n",current);
+        Action::GetInstance()->Start( current );    // Call pose
+        //while(Action::GetInstance()->IsRunning()) usleep(8*1000);
+        //Change to base position between poses
+        dg.next(); //Advance the dance generator
       }
     }
   }
