@@ -49,6 +49,7 @@
 #include "SequenceAnalyzer.h"
 #include "JSONSequenceAnalyzer.h"
 #include "DanceGenerator.h"
+#include "csapp.h"
 
 #ifdef MX28_1024
 #define MOTION_FILE_PATH    "../../../Data/motion_1024.bin"
@@ -63,7 +64,12 @@
 #define SAMPLE_RATE (44100)
 
 #define INIT_POS 1
+#define KILL_POS 15
 
+
+//Some globals
+extern char** environ;
+int BeatTrackerPID = 0;
 
 void change_current_dir()
 {
@@ -74,8 +80,12 @@ void change_current_dir()
 
 void sighandler(int sig)
 {
+  //if (BeatTrackerPID != 0)
+  //  kill(-BeatTrackerPID,SIGTSTP);
+  kill(-1,sig);
   struct termios term;
-  Action::GetInstance()->Start(1);    /* Init(stand up) pose */
+  Action::GetInstance()->Start(KILL_POS);    /* Init(stand up) pose */
+  while(Action::GetInstance()->IsRunning()) usleep(8*1000);
   tcgetattr( STDIN_FILENO, &term );
   term.c_lflag |= ICANON | ECHO;
   tcsetattr( STDIN_FILENO, TCSANOW, &term );
@@ -155,32 +165,32 @@ int main(int argc, char* argv[])
 
   DanceGenerator dg(sa->getSequenceTable());
 
-  //Initialize the motion manager and stand up
-  //MotionManager::GetInstance()->SetEnable(true);
-
-  //printf("Press the ENTER key to begin!\n");
   /*
   //Commented out temporarily.  Maybe later.
   printf("Please choose the mode:\n");
   printf("a - use entire library, no base transitions. (default)\n");
   printf("b - use random positions, return to base position between moves.\n");
-  printf("c - use dance sequence, no base transitions.\n");
+  printf("c - use dance sequence generator.\n");
   char mode = getchar();
   */
-  /* 
-  //Randomly choose dance position whenever the enter key is hit. No BeatTracker Needed
-  //this is mainly for previewing dance moves
-  while (1) {
-  getchar();
 
-  Action::GetInstance()->Start( firstpose+current );    // Call pose
-  current = (current+1)%numPos;
+  
+  
+  /////////////////// Spawn a BeatTracker Process   //////////////////////////
+  setpgid(0,0);
+  pid_t pid = fork();
+  if (pid == 0){
+    printf("I am BeatTracker (%d). Dad is DanceSynth(%d)\n",getpid(),getppid());
+    //exit(0);
+    execve("BeatTrackerApp",argv,environ);
   }
-  */
+  else {
+    BeatTrackerPID = pid;
+    printf("I am DanceSynth (%d).  Child is BeatTracker(%d)\n",getpid(),BeatTrackerPID);
+  }
+  
 
-  //Go to the initial position
-  //Action::GetInstance()->Start(initPos);
-  //while(Action::GetInstance()->IsRunning()) usleep(8*1000);
+
 
   //Connect to the server
   if ((serverSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {

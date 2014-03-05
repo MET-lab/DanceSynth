@@ -16,7 +16,9 @@ CXXFLAGS += -O2 -g -DLINUX -Wall $(INCLUDE_DIRS)
 #CXXFLAGS += -O2 -DLINUX -DDEBUG -Wall $(INCLUDE_DIRS)
 LFLAGS += -lpthread -ljpeg -lrt -ljansson
 
-OBJECTS =   main.o JSONSequenceAnalyzer.o SequenceTable.o SequenceAnalyzer.o DanceGenerator.o
+OBJECTS =   main.o JSONSequenceAnalyzer.o SequenceTable.o SequenceAnalyzer.o DanceGenerator.o csapp.o
+
+FILE ?= sequences.json
 
 TEST_COMPONENTS = test.cpp SequenceAnalyzer.cpp SequenceTable.cpp JSONSequenceAnalyzer.cpp DanceGenerator.cpp
 
@@ -28,15 +30,16 @@ clean:
 darwin.a:
 	make -C ../../build
 	
-test: buildtest
-	./test.o sequences.json
+BeatTrackerApp.a:
+	make -C ../beatTracker
+	cp ../beatTracker/BeatTrackerApp .
 
-buildtest: $(COMPONENTS)
-	$(CXX) -o test.o $(TEST_COMPONENTS) -ljansson
-
-$(TARGET): darwin.a $(OBJECTS)
+$(TARGET): darwin.a BeatTrackerApp.a $(OBJECTS)
 	$(CXX) $(CFLAGS) $(LFLAGS) $(OBJECTS) ../../lib/darwin.a -o $(TARGET)
 	chmod 755 $(TARGET)
+
+run: $(TARGET)
+	./$(TARGET) $(FILE)
 
 # useful to make a backup "make tgz"
 tgz: clean
