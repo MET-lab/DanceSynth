@@ -80,10 +80,12 @@ void change_current_dir()
 
 void sighandler(int sig)
 {
-  //if (BeatTrackerPID != 0)
-  //  kill(-BeatTrackerPID,SIGTSTP);
+  //Pass the signal onto any program in our process group
   kill(-1,sig);
+
   struct termios term;
+  
+  //Return DARwIn to his kill position (sitting)
   Action::GetInstance()->Start(KILL_POS);    /* Init(stand up) pose */
   while(Action::GetInstance()->IsRunning()) usleep(8*1000);
   tcgetattr( STDIN_FILENO, &term );
@@ -161,8 +163,8 @@ int main(int argc, char* argv[])
     cin>>filename;
   }
 
+  //Open the sequences file and fill the generator table
   sa = new JSONSequenceAnalyzer(filename);
-
   DanceGenerator dg(sa->getSequenceTable());
 
   /*
@@ -177,16 +179,17 @@ int main(int argc, char* argv[])
   
   
   /////////////////// Spawn a BeatTracker Process   //////////////////////////
-  setpgid(0,0);
-  pid_t pid = fork();
+  setpgid(0,0); //Give us our own process group
+  pid_t pid = fork(); //Fork a process so we can run the Beat Tracker
   if (pid == 0){
-    printf("I am BeatTracker (%d). Dad is DanceSynth(%d)\n",getpid(),getppid());
-    //exit(0);
+    //This is the child process, spawn the BeatTracker
+    printf("BeatTracker process spanwed, PID = %d\n",getpid());
     execve("BeatTrackerApp",argv,environ);
   }
   else {
+    //This process should continue running the Dance Synth
     BeatTrackerPID = pid;
-    printf("I am DanceSynth (%d).  Child is BeatTracker(%d)\n",getpid(),BeatTrackerPID);
+    printf("DanceSynth continuing, PID = %d\n",getpid());
   }
   
 
