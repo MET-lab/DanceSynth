@@ -80,14 +80,15 @@ void change_current_dir()
 
 void sighandler(int sig)
 {
-  //Pass the signal onto any program in our process group
+  //Pass the signal onto any program in our process group 
+  //(COMMENT THIS OUT IF YOU'RE NOT CREATING ANY CHILD PROCESSES, OTHERWISE YOU'LL KILL THE SHELL)
   kill(-1,sig);
 
   struct termios term;
   
   //Return DARwIn to his kill position (sitting)
-  Action::GetInstance()->Start(KILL_POS);    /* Init(stand up) pose */
-  while(Action::GetInstance()->IsRunning()) usleep(8*1000);
+  Action::GetInstance()->Start(KILL_POS);    /* Start kill pose */
+  while(Action::GetInstance()->IsRunning()) usleep(8*1000); /* Wait until Darwin is done moving */
   tcgetattr( STDIN_FILENO, &term );
   term.c_lflag |= ICANON | ECHO;
   tcsetattr( STDIN_FILENO, TCSANOW, &term );
@@ -222,14 +223,14 @@ int main(int argc, char* argv[])
         exit(0);
       }
       else {
-        //Do all activities when a beat is detected
+        //We recieved a packet, go to the current dance position
         printf("Recieved packet from BeatTracker.\n");
-        current = dg.currentPos();
         printf("Playing action %d...\n",current);
         Action::GetInstance()->Start( current );    // Call pose
         //while(Action::GetInstance()->IsRunning()) usleep(8*1000);
-        //Change to base position between poses
-        dg.next(); //Advance the dance generator
+        
+        //Advance the dance generator to the next move
+        dg.next();
       }
     }
   }
