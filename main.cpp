@@ -80,9 +80,11 @@ void change_current_dir()
 
 void sighandler(int sig)
 {
-  //Pass the signal onto any program in our process group 
+  cout<<"Signal recieved: "<<sig<<endl;
+
+  //Pass the signal onto any program in our process group
   //(COMMENT THIS OUT IF YOU'RE NOT CREATING ANY CHILD PROCESSES, OTHERWISE YOU'LL KILL THE SHELL)
-  kill(-1,sig);
+  kill(-1,SIGABRT);
 
   struct termios term;
   
