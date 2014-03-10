@@ -78,6 +78,7 @@ void change_current_dir()
     chdir(dirname(exepath));
 }
 
+/*
 void sighandler(int sig)
 {
   //Pass the signal onto any program in our process group 
@@ -87,8 +88,56 @@ void sighandler(int sig)
   struct termios term;
   
   //Return DARwIn to his kill position (sitting)
-  Action::GetInstance()->Start(KILL_POS);    /* Start kill pose */
-  while(Action::GetInstance()->IsRunning()) usleep(8*1000); /* Wait until Darwin is done moving */
+  Action::GetInstance()->Start(KILL_POS);    // Start kill pose
+  while(Action::GetInstance()->IsRunning()) usleep(8*1000); // Wait until Darwin is done moving
+  tcgetattr( STDIN_FILENO, &term );
+  term.c_lflag |= ICANON | ECHO;
+  tcsetattr( STDIN_FILENO, TCSANOW, &term );
+
+  exit(0);
+}
+*/
+
+/* 
+ * sigchld_handler - The kernel sends a SIGCHLD to the shell whenever
+ *     a child job terminates (becomes a zombie), or stops because it
+ *     received a SIGSTOP or SIGTSTP signal. The handler reaps all
+ *     available zombie children, but doesn't wait for any other
+ *     currently running children to terminate.  
+ */
+void sigchld_handler(int sig) 
+{
+  //printf("Signal from child. Pid: %d\n", getpid());
+  fflush(stdout);
+  pid_t pid;
+  while ((pid = waitpid(-1, NULL, WNOHANG )) > 0 ){
+    printf("BeatTracker quit (%d).\n", (int)pid);
+  }
+  /* 
+  if (errno != ECHILD)
+    unix_error("waitpid error");
+*/
+  return;
+}
+
+/* 
+ * sigint_handler - The kernel sends a SIGINT to the shell whenver the
+ *    user types ctrl-c at the keyboard.  Catch it and send it along
+ *    to the BeatTracker, then kill ourselves. 
+ */
+void sigint_handler(int sig) 
+{
+    //printf("Signal interupt.\n");
+    if ( kill(-1*BeatTrackerPID,SIGKILL) == 0 ) {
+      printf("BeatTracker killed by user.");
+      fflush(stdout);
+    }
+    
+  struct termios term;
+  
+  //Return DARwIn to his kill position (sitting)
+  Action::GetInstance()->Start(KILL_POS);    // Start kill pose
+  while(Action::GetInstance()->IsRunning()) usleep(8*1000); // Wait until Darwin is done moving
   tcgetattr( STDIN_FILENO, &term );
   term.c_lflag |= ICANON | ECHO;
   tcsetattr( STDIN_FILENO, TCSANOW, &term );
@@ -96,13 +145,19 @@ void sighandler(int sig)
   exit(0);
 }
 
-
 int main(int argc, char* argv[])
-{   
+{
+  /*
+  //Old signal handlers 
   signal(SIGABRT, &sighandler);
   signal(SIGTERM, &sighandler);
   signal(SIGQUIT, &sighandler);
   signal(SIGINT, &sighandler);
+  */
+
+  Signal(SIGINT,  sigint_handler);   /* ctrl-c */
+  Signal(SIGTSTP, sigint_handler);  /* ctrl-z (Make it do the same thing as ctrl+c) */
+  Signal(SIGCHLD, sigchld_handler);  /* Terminated or stopped child */
 
   /* Decalre server and socket variables */
   struct sockaddr_in sad; //Structure to hold server IP Address
