@@ -1,9 +1,9 @@
 ###############################################################
 #
-# Purpose: Makefile for "action_script"
-# Author.: robotis
+# Purpose: Makefile for "DanceSynth"
+# Author.: Mark Koh
 # Version: 0.1
-# License: GPL
+# Date: 1/12/2014
 #
 ###############################################################
 
