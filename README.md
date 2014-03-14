@@ -5,6 +5,8 @@ DanceSynth
   This project uses David Grunberg's BeatTracker (https://github.com/MET-lab/BeatTracker) along with an adapted Markov-Chain algorithm to make DARwIn dance to the beat of music.  The DanceSynth is separated into modules to allow for scaling of the project to other mediums. 
   It currently uses a SequenceAnalyzer to read in sequences from a file and put them into a Markov-table, which is then used by the DanceGenerator which uses the probabilities in the sequences to determine the most likely next dance move to go to.  The system can be looked at from a higher level as a probablistic state machine.  The DanceSynth program now spawns an instance of the BeatTracker (previously you had to run them separately) and communicates with it through a UDP connection.
   *Note: The JSONSequenceAnalyzer uses a C libary called jansson to parse the JSON.  You can find this library at http://www.digip.org/jansson/*
+  
+  You can find photos of all of the dance moves in the wiki for this GitHub!
 
 ###Running the DanceSynth
 You may compile the program using make:
