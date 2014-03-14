@@ -18,23 +18,23 @@ LFLAGS += -lpthread -ljpeg -lrt -ljansson
 
 OBJECTS =   main.o JSONSequenceAnalyzer.o SequenceTable.o SequenceAnalyzer.o DanceGenerator.o csapp.o
 
-FILE ?= sequences.json
+FILE ?=sequences.json
 
-TEST_COMPONENTS = test.cpp SequenceAnalyzer.cpp SequenceTable.cpp JSONSequenceAnalyzer.cpp DanceGenerator.cpp
+BEATTRACKER = BeatTrackerApp
 
 all: $(TARGET)
 
 clean:
-	rm -f *.a *.o $(TARGET) core *~ *.so *.lo
+	rm -f *.a *.o core *~ *.so *.lo $(TARGET) $(BEATTRACKER)
 
 darwin.a:
 	make -C ../../build
 	
-BeatTrackerApp.a:
+$(BEATTRACKER):
 	make -C ../beatTracker
-	cp ../beatTracker/BeatTrackerApp .
+	cp ../beatTracker/$(BEATTRACKER) .
 
-$(TARGET): darwin.a BeatTrackerApp.a $(OBJECTS)
+$(TARGET): darwin.a $(BEATTRACKER) $(OBJECTS)
 	$(CXX) $(CFLAGS) $(LFLAGS) $(OBJECTS) ../../lib/darwin.a -o $(TARGET)
 	chmod 755 $(TARGET)
 

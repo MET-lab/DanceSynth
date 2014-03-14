@@ -79,24 +79,24 @@ void change_current_dir()
 }
 
 /*
-void sighandler(int sig)
-{
-  cout<<"Signal recieved: "<<sig<<endl;
+   void sighandler(int sig)
+   {
+   cout<<"Signal recieved: "<<sig<<endl;
 
-  //Pass the signal onto any program in our process group
-  //(COMMENT THIS OUT IF YOU'RE NOT CREATING ANY CHILD PROCESSES, OTHERWISE YOU'LL KILL THE SHELL)
-  kill(-1,SIGABRT);
+//Pass the signal onto any program in our process group
+//(COMMENT THIS OUT IF YOU'RE NOT CREATING ANY CHILD PROCESSES, OTHERWISE YOU'LL KILL THE SHELL)
+kill(-1,SIGABRT);
 
-  struct termios term;
-  
-  //Return DARwIn to his kill position (sitting)
-  Action::GetInstance()->Start(KILL_POS);    // Start kill pose
-  while(Action::GetInstance()->IsRunning()) usleep(8*1000); // Wait until Darwin is done moving
-  tcgetattr( STDIN_FILENO, &term );
-  term.c_lflag |= ICANON | ECHO;
-  tcsetattr( STDIN_FILENO, TCSANOW, &term );
+struct termios term;
 
-  exit(0);
+//Return DARwIn to his kill position (sitting)
+Action::GetInstance()->Start(KILL_POS);    // Start kill pose
+while(Action::GetInstance()->IsRunning()) usleep(8*1000); // Wait until Darwin is done moving
+tcgetattr( STDIN_FILENO, &term );
+term.c_lflag |= ICANON | ECHO;
+tcsetattr( STDIN_FILENO, TCSANOW, &term );
+
+exit(0);
 }
 */
 
@@ -116,9 +116,9 @@ void sigchld_handler(int sig)
     printf("BeatTracker quit (%d).\n", (int)pid);
   }
   /* 
-  if (errno != ECHILD)
-    unix_error("waitpid error");
-*/
+     if (errno != ECHILD)
+     unix_error("waitpid error");
+     */
   return;
 }
 
@@ -129,14 +129,15 @@ void sigchld_handler(int sig)
  */
 void sigint_handler(int sig) 
 {
-    //printf("Signal interupt.\n");
-    if ( kill(-1*BeatTrackerPID,SIGKILL) == 0 ) {
-      printf("BeatTracker killed by user.");
-      fflush(stdout);
-    }
-    
+  printf("\nDanceSynth terminating...\n");
+  //printf("Signal interupt.\n");
+  if ( kill(-1*BeatTrackerPID,SIGKILL) == 0 ) {
+    printf("BeatTracker killed by user.");
+    fflush(stdout);
+  }
+
   struct termios term;
-  
+
   //Return DARwIn to his kill position (sitting)
   Action::GetInstance()->Start(KILL_POS);    // Start kill pose
   while(Action::GetInstance()->IsRunning()) usleep(8*1000); // Wait until Darwin is done moving
@@ -144,6 +145,7 @@ void sigint_handler(int sig)
   term.c_lflag |= ICANON | ECHO;
   tcsetattr( STDIN_FILENO, TCSANOW, &term );
 
+  printf("Done.\n");
   exit(0);
 }
 
@@ -157,9 +159,9 @@ int main(int argc, char* argv[])
   signal(SIGINT, &sighandler);
   */
 
-  Signal(SIGINT,  sigint_handler);   /* ctrl-c */
-  Signal(SIGTSTP, sigint_handler);  /* ctrl-z (Make it do the same thing as ctrl+c) */
-  Signal(SIGCHLD, sigchld_handler);  /* Terminated or stopped child */
+  signal(SIGINT,  &sigint_handler);   /* ctrl-c */
+  signal(SIGTSTP, &sigint_handler);  /* ctrl-z (Make it do the same thing as ctrl+c) */
+  signal(SIGCHLD, &sigchld_handler);  /* Terminated or stopped child */
 
   /* Decalre server and socket variables */
   struct sockaddr_in sad; //Structure to hold server IP Address
@@ -196,13 +198,13 @@ int main(int argc, char* argv[])
 
 
   /////////////////// Initialize Motion ///////////////////////////////
-  
+
   minIni* ini = new minIni(INI_FILE_PATH);
-  
+
   MotionManager::GetInstance()->LoadINISettings(ini);
   Action::GetInstance()->m_Joint.SetEnableBody(true, true);
   MotionManager::GetInstance()->SetEnable(true);
-  
+
   Action::GetInstance()->Start(INIT_POS);
   while(Action::GetInstance()->IsRunning()) usleep(8*1000);
 
@@ -215,6 +217,7 @@ int main(int argc, char* argv[])
 
   if(argc > 1){
     filename = argv[1];
+    cout<<"Using file \""<<filename<<"\""<<endl;
   }
   else {
     cout<<"Please enter the filename you would like to use for sequences:"<<endl;
@@ -234,8 +237,8 @@ int main(int argc, char* argv[])
   char mode = getchar();
   */
 
-  
-  
+
+
   /////////////////// Spawn a BeatTracker Process   //////////////////////////
   setpgid(0,0); //Give us our own process group
   pid_t pid = fork(); //Fork a process so we can run the Beat Tracker
@@ -249,7 +252,7 @@ int main(int argc, char* argv[])
     BeatTrackerPID = pid;
     printf("DanceSynth continuing, PID = %d\n",getpid());
   }
-  
+
 
 
 
@@ -282,10 +285,11 @@ int main(int argc, char* argv[])
       else {
         //We recieved a packet, go to the current dance position
         printf("Recieved packet from BeatTracker.\n");
+        current = dg.currentPos();
         printf("Playing action %d...\n",current);
         Action::GetInstance()->Start( current );    // Call pose
         //while(Action::GetInstance()->IsRunning()) usleep(8*1000);
-        
+
         //Advance the dance generator to the next move
         dg.next();
       }
