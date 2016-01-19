@@ -112,6 +112,8 @@ void sigchld_handler(int sig)
   //printf("Signal from child. Pid: %d\n", getpid());
   fflush(stdout);
   pid_t pid;
+    
+    // ISSUE: BeatTracker Quitting here
   while ((pid = waitpid(-1, NULL, WNOHANG )) > 0 ){
     printf("BeatTracker quit (%d).\n", (int)pid);
   }
@@ -119,6 +121,7 @@ void sigchld_handler(int sig)
      if (errno != ECHILD)
      unix_error("waitpid error");
      */
+  exit(EXIT_FAILURE);
   return;
 }
 

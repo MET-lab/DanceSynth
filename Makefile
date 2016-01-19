@@ -30,7 +30,7 @@ clean:
 darwin.a:
 	make -C ../../build
 	
-$(BEATTRACKER):
+beat:
 	make -C ../beatTracker
 	cp ../beatTracker/$(BEATTRACKER) .
 
@@ -38,7 +38,7 @@ $(TARGET): darwin.a $(BEATTRACKER) $(OBJECTS)
 	$(CXX) $(CFLAGS) $(LFLAGS) $(OBJECTS) ../../lib/darwin.a -o $(TARGET)
 	chmod 755 $(TARGET)
 
-run: $(TARGET)
+run: $(TARGET) 
 	./$(TARGET) $(FILE)
 
 # useful to make a backup "make tgz"
